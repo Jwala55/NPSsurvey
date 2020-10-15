@@ -25,12 +25,13 @@ module.exports = async function (context, req) {
     const mobile = req.body.mobile;
     const name = req.body.name;
     const client = req.body.client;
+    const id = req.body.id;
 
 
     var storageTableQuery = storage.TableQuery;
 
     var tableQuery = new storageTableQuery()         //query for table
-        .where('mobile eq ?', mobile).and('name ?', name).and('PartitionKey ?', client);
+        .where('mobile eq ?', mobile).and('name eq ?', name).and('PartitionKey eq ?', client);
 
     // fetching the Entities from table
     storageClient.queryEntities('npsResponse', tableQuery, null, async function (error, result, response) {
@@ -40,12 +41,13 @@ module.exports = async function (context, req) {
             const user = {
                 "name": req.body.name,
                 "mobile": req.body.mobile,
-                "client": req.body.client
+                "client": req.body.client,
+                "id": req.body.id
             }
 
-            const jtoken = jwt.sign({ user }, 'secretkey', { expiresIn: '24h' }); // JWT Token
+            const jtoken = jwt.sign({ user }, process.env.SECRET_KEY, { expiresIn: '24h' }); // JWT Token
 
-            const originalUrl = `http://localhost:7071/api/SurveyResponse?token=${jtoken}`;  // feedback url to Call Center SurveyReponse link
+            const originalUrl = `${process.env.BASE_LINK}SurveyResponse?token=${jtoken}`;  // feedback url to Call Center SurveyReponse link
             const options = {
                 method: 'POST',
                 uri: process.env.LINK_SHORTENER,
@@ -66,7 +68,7 @@ module.exports = async function (context, req) {
             console.log(responseObj);
             const Url = responseObj.shortUrl;
             console.log(Url);
-            await sendObj.sendSms(Url, mobile).catch(err => console.log(err)); // send msg with shortened url
+            sendObj.sendSms(Url, mobile) // send msg with shortened url
         }
         else {
             console.log(error);

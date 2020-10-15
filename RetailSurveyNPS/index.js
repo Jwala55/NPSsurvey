@@ -13,18 +13,19 @@ module.exports = async function (context, req) {
 
         if (validationValue) {
 
-            const mobile = await validationValue.mobile;     // getting values from jwt payload
-            const name = await validationValue.name;
-            const client = await validationValue.client;
+            const mobile = await validationValue.user.mobile;     // getting values from jwt payload
+            const name = await validationValue.user.name;
+            const client = await validationValue.user.client;
+            const id = await validationValue.user.id;
             const resp = await req.body.resp;                   // getting value from body
             var entity = {
                 PartitionKey: entGen.String(client),
-                RowKey: entGen.String('david'),
+                RowKey: entGen.String(id),
                 mobile: entGen.String(mobile),
                 resp: entGen.String(resp),
                 name: entGen.String(name)
             };
-            tableService.insertOrReplaceEntity('npsResponse', entity, function (error, result, response) {  // Inserts the response in table
+            tableService.insertOrReplaceEntity('npsResponse', entity, function (error, result, response) {  // Inserts and updates the response in table
                 if (!error) {
                     console.log(result);
                 }
@@ -37,7 +38,7 @@ module.exports = async function (context, req) {
 
 
     function validateToken(token) {    // function for validating token
-        return jwt.verify(token, 'secretkey');
+        return jwt.verify(token, process.env.SECRET_KEY);
     }
 
 }

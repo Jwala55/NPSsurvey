@@ -25,19 +25,19 @@ function sendEmail(Url, useremail) {
     });
 }
 
-function sendSms(sendlink, number) {
+function sendSms(sendlink, mobile) {
     const accountSid = process.env.ACC_KEY;
     const authToken = process.env.ACC_PASS;
     const twilio = require('twilio');
-    const client = new twilio(accountSid, authToken);
+    const client = new twilio(accountSid,authToken);
 
     client.messages
         .create({
             body: `Thank you for shopping with us. Please provide us with the feedback. Here is the link.Ignore if already done ${sendlink}`,
             from: '+17343392200',
-            to: `+91${number}`
+            to: `+91${mobile}`
         })
-        .then(message => console.log(message.sid));
+        .then(message => console.log(message.sid)).catch(err => console.log(err));
 }
 
 module.exports = { sendEmail, sendSms };

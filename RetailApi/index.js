@@ -18,12 +18,13 @@ module.exports = async function (context, myQueueItem) {
     const mobile = myQueueItem.mobile;              //getting values using queue trigger
     const email = myQueueItem.email;
     const client = myQueueItem.client;
-    const name = myQueueItem.name
+    const name = myQueueItem.name;
+    const id = myQueueItem.id;
 
     var storageTableQuery = await storage.TableQuery;
 
     var tableQuery = new storageTableQuery()             //query for table
-        .where('mobile eq ?', mobile).and('email ?', email).and('PartitionKey ?', client);
+        .where('mobile eq ?', mobile).and('email eq ?', email).and('PartitionKey eq ?', client);
 
     // fetching the Entities from table
     storageClient.queryEntities('npsResponse', tableQuery, null, async function (error, result, response) {
@@ -34,12 +35,13 @@ module.exports = async function (context, myQueueItem) {
                 "name": name,
                 "mobile": mobile,
                 "email": email,
-                "client": client
+                "client": client,
+                "id": id
             }
 
-            const jtoken = jwt.sign({ user }, 'secretkey', { expiresIn: '24h' });   // JWT Token
+            const jtoken = jwt.sign({ user }, process.env.SECRET_KEY, { expiresIn: '24h' });   // JWT Token
 
-            const originalUrl = `http://localhost:7071/api/RetailSurveyNPS?token=${jtoken}`;         // feedback url to Call Center RetailSurveyNPS link
+            const originalUrl = `${process.env.BASE_LINK}RetailSurveyNPS?token=${jtoken}`;         // feedback url to RetailSurveyNPS link
             const options = {
                 method: 'POST',
                 uri: process.env.LINK_SHORTENER,
@@ -47,7 +49,7 @@ module.exports = async function (context, myQueueItem) {
                     originalUrl,
                     shortBaseUrl: process.env.SHORT_BASE_URL,
                     customFields: {
-                        mobile: req.body.mobile,
+                        mobile: myQueueItem.mobile,
                     },
                 },
                 headers: {
@@ -60,8 +62,9 @@ module.exports = async function (context, myQueueItem) {
             console.log(responseObj);
             const Url = responseObj.shortUrl;
             console.log(Url);
-            sendObj.sendSms(Url, mobile);       // send msg with shortened url
             sendObj.sendEmail(Url, email);      // send email with shortened url
+            sendObj.sendSms(Url, mobile);       // send msg with shortened url
+
         }
         else {
             console.log(error);
