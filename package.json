@@ -1,0 +1,22 @@
+{
+  "name": "npssurvey",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/cosmos": "^3.9.2",
+    "@sendgrid/mail": "^7.2.6",
+    "azure-storage": "^2.10.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "node-uuid": "^1.4.8",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "twilio": "^3.49.4"
+  },
+  "devDependencies": {}
+}
