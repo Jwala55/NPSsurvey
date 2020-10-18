@@ -68,7 +68,7 @@ module.exports = async function (context, req) {
             console.log(responseObj);
             const Url = responseObj.shortUrl;
             console.log(Url);
-            sendObj.sendSms(Url, mobile) // send msg with shortened url
+            sendObj.getToken_SendSms(mobile, Url); // send msg with shortened url
         }
         else {
             console.log(error);

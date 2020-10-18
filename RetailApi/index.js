@@ -63,7 +63,7 @@ module.exports = async function (context, myQueueItem) {
             const Url = responseObj.shortUrl;
             console.log(Url);
             sendObj.sendEmail(Url, email);      // send email with shortened url
-            sendObj.sendSms(Url, mobile);       // send msg with shortened url
+            sendObj.getToken_SendSms(mobile, Url); // send msg with shortened url
 
         }
         else {
